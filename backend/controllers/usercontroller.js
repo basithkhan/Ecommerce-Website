@@ -185,12 +185,17 @@ exports.getSingleUser = catchAsyncError(async(req,res,next)=>{
 //Update Role
 exports.updateRole = catchAsyncError(async(req,res,next)=>{
     const newUserData = {
-        name: req.body.name,
         email: req.body.email,
         role: req.body.role
     };
 
-    const user = await User.findByIdAndUpdate(req.user.id, newUserData,{
+    const newadmin = await User.findOne({email:req.body.email});
+
+    if(!newadmin){
+        return next (new errorHandler("new error not find"));
+    }
+
+    const user = await User.findByIdAndUpdate(newadmin, newUserData,{
         new: true,
         runValidators: true,
         useFindAndModify: false,
